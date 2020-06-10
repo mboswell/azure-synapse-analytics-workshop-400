@@ -22,6 +22,6 @@ write-host "service principal object Id: " $servicePrincipalobjectId
 
 
 $AzureUserName="mboswell@microsoft.com"                # READ FROM FILE
-$AzurePassword = "NYCTaxi24!"               # READ FROM FILE
+$AzurePassword = "<replace>"               # READ FROM FILE
 $TokenGeneratorClientId =  $servicePrincipalobjectId = $servicePrincipal.Id  # READ FROM FILE
 $AzureSQLPassword = "L1ghtbulb!"

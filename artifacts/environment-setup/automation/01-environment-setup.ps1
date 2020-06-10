@@ -10,7 +10,7 @@ $InformationPreference = "Continue"
 
 #
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
-. C:\LabFiles\AzureCreds.ps1
+.\artifacts\environment-setup\labfiles\AzureCred.ps1
 
 $userName = $AzureUserName                # READ FROM FILE
 $password = $AzurePassword                # READ FROM FILE
@@ -22,8 +22,11 @@ $cred = new-object -typename System.Management.Automation.PSCredential -argument
 
 Connect-AzAccount -Credential $cred | Out-Null
 
+
+New-AzResourceGroup -Name lightbulbtestl400 -Location westeurope
+
 $resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L400*" }).ResourceGroupName
-$uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
+$uniqueId =  "003"
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
 
@@ -62,11 +65,12 @@ $global:tokenTimes = [ordered]@{
         Management = (Get-Date -Year 1)
 }
 
+<# 
 Write-Information "Assign Ownership to L400 Proctors on Synapse Workspace"
 Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "6e4bf58a-b8e1-4cc3-bbf9-d73143322b78" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # Workspace Admin
 Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "7af0c69a-a548-47d6-aea3-d00e69bd83aa" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # SQL Admin
 Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "c3a6d2f1-a26f-4810-9b0f-591308d5cbf1" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # Apache Spark Admin
-
+ #>
 Write-Information "Create KeyVault linked service $($keyVaultName)"
 
 $result = Create-KeyVaultLinkedService -TemplatesPath $templatesPath -WorkspaceName $workspaceName -Name $keyVaultName
