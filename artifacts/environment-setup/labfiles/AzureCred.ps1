@@ -15,6 +15,11 @@ $certPasswordSecureString = ConvertTo-SecureString $certPassword -AsPlainText -F
 
 $application = Get-AzADApplication -DisplayName $certName
 
+
+
+# Get Service Principal using objectId
+$sp = Get-AzureADServicePrincipal -ObjectId "52f8d204-c196-4625-b49c-acc867d10d60"
+
 $servicePrincipal = Get-AzADServicePrincipal -ApplicationId $application.ApplicationId
 
 $servicePrincipalobjectId = $servicePrincipal.Id

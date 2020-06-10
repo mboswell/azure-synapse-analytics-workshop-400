@@ -12,16 +12,16 @@ $InformationPreference = "Continue"
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
 .\artifacts\environment-setup\labfiles\AzureCred.ps1
 
-$userName = $AzureUserName                # READ FROM FILE
-$password = $AzurePassword                # READ FROM FILE
+$userName = $AzureUserName                # Service Principle Name
+$password = $AzurePassword                # Service Principle Password
 $clientId = $TokenGeneratorClientId       # READ FROM FILE
 $global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
 
 $securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
+#$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
 
-Connect-AzAccount -Credential $cred | Out-Null
-
+$cred = New-Object System.Management.Automation.PSCredential($clientId,$securePassword)
+Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $tenantId
 
 New-AzResourceGroup -Name lightbulbtestl400 -Location westeurope
 
@@ -54,6 +54,8 @@ $ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($passwo
 $global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
 $global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
 $global:ropcBodySynapseSQL = "$($ropcBodyCore)&scope=https://sql.azuresynapse.net/.default"
+
+##Synapse Managed ID Object ID 52f8d204-c196-4625-b49c-acc867d10d60
 
 $global:synapseToken = ""
 $global:synapseSQLToken = ""
