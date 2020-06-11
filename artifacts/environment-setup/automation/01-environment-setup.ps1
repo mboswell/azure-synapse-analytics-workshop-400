@@ -10,25 +10,8 @@ $InformationPreference = "Continue"
 
 #
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
-.\artifacts\environment-setup\labfiles\AzureCred.ps1
+#.\artifacts\environment-setup\labfiles\AzureCred.ps1
 
-$userName = $AzureUserName                # Service Principle Name
-$password = $AzurePassword                # Service Principle Password
-$clientId = $TokenGeneratorClientId       # READ FROM FILE
-$global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
-
-$securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
-#$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
-
-$cred = New-Object System.Management.Automation.PSCredential($clientId,$securePassword)
-Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $tenantId
-
-New-AzResourceGroup -Name lightbulbtestl400 -Location westeurope
-
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L400*" }).ResourceGroupName
-$uniqueId =  "003"
-$subscriptionId = (Get-AzContext).Subscription.Id
-$tenantId = (Get-AzContext).Tenant.Id
 
 $templatesPath = ".\artifacts\environment-setup\templates"
 $datasetsPath = ".\artifacts\environment-setup\datasets"
@@ -48,14 +31,17 @@ $sparkPoolName = "SparkPool01"
 $amlWorkspaceName = "amlworkspace$($uniqueId)"
 $global:sqlEndpoint = "$($workspaceName).sql.azuresynapse.net"
 $global:sqlUser = "asa.sql.admin"
+$global:sqlPassword = $AzureSQLPassword
 
+#$ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($clientsecret)&grant_type=password"
+#$ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
 
-$ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
+$ropcBodyCore = "grant_type=client_credentials&client_id=$($clientId)&client_secret=$($clientSecret)"
 $global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
 $global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
 $global:ropcBodySynapseSQL = "$($ropcBodyCore)&scope=https://sql.azuresynapse.net/.default"
 
-##Synapse Managed ID Object ID 52f8d204-c196-4625-b49c-acc867d10d60
+
 
 $global:synapseToken = ""
 $global:synapseSQLToken = ""
@@ -67,11 +53,12 @@ $global:tokenTimes = [ordered]@{
         Management = (Get-Date -Year 1)
 }
 
+
 <# 
 Write-Information "Assign Ownership to L400 Proctors on Synapse Workspace"
-Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "6e4bf58a-b8e1-4cc3-bbf9-d73143322b78" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # Workspace Admin
-Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "7af0c69a-a548-47d6-aea3-d00e69bd83aa" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # SQL Admin
-Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "c3a6d2f1-a26f-4810-9b0f-591308d5cbf1" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # Apache Spark Admin
+Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "6e4bf58a-b8e1-4cc3-bbf9-d73143322b78" -PrincipalId "f9f8324d-9df4-49aa-a8de-0856e7050295"  # Workspace Admin
+Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "7af0c69a-a548-47d6-aea3-d00e69bd83aa" -PrincipalId "f9f8324d-9df4-49aa-a8de-0856e7050295"  # SQL Admin
+Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "c3a6d2f1-a26f-4810-9b0f-591308d5cbf1" -PrincipalId "f9f8324d-9df4-49aa-a8de-0856e7050295"  # Apache Spark Admin
  #>
 Write-Information "Create KeyVault linked service $($keyVaultName)"
 

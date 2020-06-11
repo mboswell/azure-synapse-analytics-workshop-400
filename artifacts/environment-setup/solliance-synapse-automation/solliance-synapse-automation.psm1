@@ -1150,7 +1150,7 @@ function Get-SparkNotebookSessionStatement {
     )
 
     $uri = "https://$($WorkspaceName).dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/$($SparkPoolName)/sessions/$($SessionId)/statements/$($StatementId)"
-
+    
     Ensure-ValidTokens
     $result = Invoke-RestMethod  -Uri $uri -Method GET -Headers @{ Authorization="Bearer $synapseToken" } -ContentType "application/json"
     
@@ -1327,15 +1327,15 @@ function Refresh-Token {
     )
 
     if ($TokenType -eq "Synapse") {
-        $result = Invoke-RestMethod  -Uri "https://login.microsoftonline.com/microsoft.onmicrosoft.com/oauth2/v2.0/token" `
+        $result = Invoke-RestMethod  -Uri "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/token" `
             -Method POST -Body $global:ropcBodySynapse -ContentType "application/x-www-form-urlencoded"
         $global:synapseToken = $result.access_token
     } elseif ($TokenType -eq "SynapseSQL") {
-        $result = Invoke-RestMethod  -Uri "https://login.microsoftonline.com/microsoft.onmicrosoft.com/oauth2/v2.0/token" `
+        $result = Invoke-RestMethod  -Uri "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/token" `
             -Method POST -Body $global:ropcBodySynapseSQL -ContentType "application/x-www-form-urlencoded"
         $global:synapseSQLToken = $result.access_token
     } elseif ($TokenType -eq "Management") {
-        $result = Invoke-RestMethod  -Uri "https://login.microsoftonline.com/microsoft.onmicrosoft.com/oauth2/v2.0/token" `
+        $result = Invoke-RestMethod  -Uri "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/token" `
             -Method POST -Body $global:ropcBodyManagement -ContentType "application/x-www-form-urlencoded"
         $global:managementToken = $result.access_token
     } else {
